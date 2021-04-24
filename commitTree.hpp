@@ -27,7 +27,8 @@ struct singlyNode
 struct hashNode
 {
     int key;
-    commitNode * target;
+    struct hashNode * next;
+    struct commitNode * target;
 };
 
 class commitTree
@@ -45,33 +46,33 @@ class commitTree
         void gitStatus();
         void pullToVer(string branchName, string target);
         void pullToMain(string branchName);
-
+        static unsigned int stringToInt(string name);
 
 
 };
 
 class hashTable
 {
+    private:
+        int tableSize;  // No. of buckets (linked lists)
 
-    int tableSize;  // No. of buckets (linked lists)
+        // Pointer to an array containing buckets
+        commitNode* *table;
 
-    // Pointer to an array containing buckets
-    commitNode* *table;
+    public:
+        HashTable(int bsize);  // Constructor
 
-public:
-    HashTable(int bsize);  // Constructor
+        // inserts a key into hash table
+        bool insertHash(string name);
 
-    // inserts a key into hash table
-    bool insertItem(int key);
+        // hash function to map values to key
+        unsigned int hashFunction(int key);
 
-    // hash function to map values to key
-    unsigned int hashFunction(int key);
+        
 
-    unsigned int stringToInt(string name);
+        void printTable();
 
-    void printTable();
-
-    commitNode* searchItem(int key);
+        commitNode* searchHash(int key);
 
 };
 
