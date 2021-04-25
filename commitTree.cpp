@@ -17,7 +17,7 @@ hashNode* HashTable::createNode(int key, hashNode* next)
     return nw;
 }
 
-HashTable::HashTable(int bsize)
+hashTable::hashTable(int bsize)
 {
     this->tableSize = bsize;
     table = new hashNode*[tableSize];
@@ -111,7 +111,7 @@ void HashTable::printTable()
 {
     for (int i = 0; i < tableSize; i++) {
         cout << i <<"|| ";
-        node * temp = table[i];
+        hashNode * temp = table[i];
         while (temp != nullptr)
             {
                 cout << temp->key << " || ";
@@ -135,6 +135,9 @@ void HashTable::printTable()
     return key;
  }
 
+commitTree::commitTree()
+{
 
+}
 
 #endif

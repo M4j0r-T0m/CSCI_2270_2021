@@ -60,7 +60,7 @@ class hashTable
         commitNode* *table;
 
     public:
-        HashTable(int bsize);  // Constructor
+        hashTable(int bsize);  // Constructor
 
         // inserts a key into hash table
         bool insertHash(string name);
