@@ -263,21 +263,22 @@ void pushCommit(commitNode * curr, string branchName)
 
 // void addFile(string fileName)
 // {
-//     int version = commitNode->commitNum;
+//     //int version = commitNode->commitNum;
 //     singlyNode *node = head;
-//     string v = to_string(version);
-//     string fileVersion = fileName + v;
+//     //string v = to_string(version);
+//     //string fileVersion = fileName + v;
 //     while(node->next != NULL)
 //     {
 //         if(node->fileName == fileName)
 //         {
 //             cout << "A file with that name as already been added." << endl;
+               return;
 //         }
 //         node = node->next;
 //     }
 //     singlyNode *addNode = new singlyNode;
 //     addNode->fileName = fileName;
-//     addNode->fileVersion = fileVersion;
+//     //addNode->fileVersion = fileVersion;
 //     head->next = addNode;
 //     node->next = NULL;
 // }
@@ -294,6 +295,7 @@ void pushCommit(commitNode * curr, string branchName)
 //     if (node == NULL)
 //     {
 //         cout << "No file was found with that name." << endl;
+            return;
 //     }
 //     else if(node->fileName == fileName)
 //     {
