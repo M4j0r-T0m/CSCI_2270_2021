@@ -41,12 +41,15 @@ class commitTree
         void addFile(string fileName);
         void removeFile(string fileName);
         void commitFile(string fileName);
+        void pushCommit(commitNode * curr, string branchName)
         void createBranch(commitNode parent);
-        void fileCompare(string fileName);
+        bool fileCompare(string targ, string curr);
         void gitStatus();
         void pullToVer(string branchName, string target);
         void pullToMain(string branchName);
         static unsigned int stringToInt(string name);
+        commitNode* searchComm(string branchName, bool latest);
+        commitNode* searchComm(string branchName, int version);
 
 
 };
