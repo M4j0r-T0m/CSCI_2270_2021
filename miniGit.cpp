@@ -1,15 +1,40 @@
 #ifndef COMMITTREE_CPP
 #define COMMITTREE_CPP
-#include "commitTree.hpp"
+#include "miniGit.hpp"
 #include<vector>
 #include<iostream>
 #include<sstream>
+#include<fstream>
 
 using namespace std;
 
 unsigned int commitTree::stringToInt(string name);
 
+string nameVersioner(const string& fName)
+{
+    stringstream powerWord;
+    string output;
+    string realName = fName.substr(0, s.find("_"));
+    string fVer = fName.substr(s.find("_")+1, s.find("."));
+    int version = stoi(fVer)+1;
+    string filetype = fName.substr(s.find(".")+1, fName.length());
+    powerWord << realName << "_" << version << "." << filetype;
+    powerWord >> output;
+    return output;
+}
 
+string makeFilePath(commitNode* curr,const string& fName)
+{
+    string output;
+    stringstream bigName;
+    bigName << ".minigit/" ;
+    bigName << curr->branchName << "/";
+    bigName << curr->branchName << "_" << curr->commitNum << "/" ;
+    bigName << fName ;
+    bigName >> output;
+    return output;
+    
+}
 hashTable::hashTable(int bsize)
 {
     this->tableSize = bsize;
