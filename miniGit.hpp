@@ -42,7 +42,7 @@ class commitTree
         commitTree(singlyNode* head)
         ~commitTree();
         void addFile(string fileName, commitNode* curr);
-        void removeFile(string fileName);
+        void removeFile(string fileName, commitNode* curr);
         //void commitFile(string fileName);
         void pushCommit(singlyNode * babyHead);
         void pushCommit(singlyNode * babyHead, string branchName);
