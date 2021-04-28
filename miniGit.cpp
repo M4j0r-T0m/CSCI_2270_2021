@@ -125,7 +125,7 @@ void hashTable::printTable()
 void commitTree::addFile(string fileName, commitNode* curr)
  {
      //int version = commitNode->commitNum;
-     singlyNode* head = curr;
+     singlyNode* head = curr->head;
      singlyNode *node = head;
      //string v = to_string(version);
      //string fileVersion = fileName + v;
@@ -140,7 +140,7 @@ void commitTree::addFile(string fileName, commitNode* curr)
      }
      singlyNode *addNode = new singlyNode;
      addNode->fileName = fileName;
-     addNode->fileVersion = 0;
+     addNode->fileVersion = "";
      //addNode->fileVersion = fileVersion;
      head->next = addNode;
      node->next = NULL;
@@ -148,7 +148,7 @@ void commitTree::addFile(string fileName, commitNode* curr)
 
  void commitTree::removeFile(string fileName, commitNode* curr)
  {
-     singlyNode* head = curr;
+     singlyNode* head = curr->head;
      singlyNode *node = head->next;
      singlyNode *prev = head;
      while(node->fileName != fileName)
@@ -357,7 +357,7 @@ void commitTree::createBranch(commitNode *par, string branchN, singlyNode* babyH
     else
     {
         this->root = nw;
-        nw->branchName= "Main"
+        nw->branchName= "Main";
 
 
     }

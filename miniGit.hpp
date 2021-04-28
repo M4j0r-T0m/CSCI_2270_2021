@@ -4,7 +4,12 @@
 #include<iostream>
 using namespace std;
 
-
+struct singlyNode
+{
+    string fileName;
+    string fileVersion;
+    singlyNode * next;
+};
 
 struct commitNode
 {
@@ -17,12 +22,6 @@ struct commitNode
     bool current; 
 };
 
-struct singlyNode
-{
-    string fileName;
-    string fileVersion;
-    singlyNode * next;
-};
 
 struct hashNode
 {
@@ -38,11 +37,12 @@ class commitTree
         commitNode * currentBranch;
 
     public:
+
         commitTree();
         commitTree(singlyNode* head);
         ~commitTree();
-        void addFile(string fileName);
-        void removeFile(string fileName);
+        void addFile(string fileName, commitNode* curr);
+        void removeFile(string fileName, commitNode* curr);
         //void commitFile(string fileName);
         void pushCommit(singlyNode * babyHead);
         void pushCommit(singlyNode * babyHead, string branchName);
@@ -56,7 +56,7 @@ class commitTree
         static unsigned int stringToInt(string name);
         commitNode* searchComm(string branchName, bool latest);
         commitNode* searchComm(string branchName, int version);
-
+        singlyNode* sLLNodeAt(commitNode* node, int index);
 
 };
 
@@ -66,13 +66,13 @@ class hashTable
         int tableSize;  // No. of buckets (linked lists)
 
         // Pointer to an array containing buckets
-        commitNode* *table;
+        hashNode* *table;
 
     public:
         hashTable(int bsize);  // Constructor
 
         // inserts a key into hash table
-        bool insertHash(string name);
+        bool insertHash(commitNode *targ);
 
         // hash function to map values to key
         unsigned int hashFunction(int key);
