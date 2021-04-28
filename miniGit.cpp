@@ -8,7 +8,7 @@
 
 using namespace std;
 
-tring nameVersioner(const string& fName)
+string nameVersioner(const string& fName)
 {
     stringstream powerWord;
     string output;
@@ -252,53 +252,86 @@ singlyNode* commitTree::sLLNodeAt(commitNode* node, int index){
     return temp;
 }
 
-void commitTree::checkout(string branchName, int version){
-    int currNodeSLLSize = 0;
-    singlyNode* traversalNode = searchComm(branchName, version)->head;
-    while(traversalNode != NULL){
-        traversalNode = traversalNode->next;
-        currNodeSLLSize += 1;
-    }
-    for (int i = 0; i < currNodeSLLSize; i++){
-        fstream targetFile = fstream();
-        ofstream currentFile = ofstream();
-        string targetFileName = ".minigit/" + branchName + "/" + branchName + "_" ;
-        if (version < 10){
-            targetFileName += "0" + to_string(version);
-        }
-        else{
-            targetFileName += to_string(version);
-        }
-        string fileNameNoType = "";
-        string fileType = "";
-        bool nextCharFileType = false;
-        for (int j = 0; j < sLLNodeAt(searchComm(branchName, version), i)->fileName.length(); j++){
-                if (sLLNodeAt(searchComm(branchName, version), i)->fileName[j] == '.'){
-                    nextCharFileType = true;
-                }
-                if (!nextCharFileType){
-                    fileNameNoType += sLLNodeAt(searchComm(branchName, version), i)->fileName[j];
-                }
-                else{
-                    fileType += sLLNodeAt(searchComm(branchName, version), i)->fileName[j];
-                }
-            }
-        targetFileName += fileNameNoType += "_";
-        if (sLLNodeAt(searchComm(branchName, version), i)->fileVersion < 10){
-            targetFileName += "0" + to_string(sLLNodeAt(searchComm(branchName, version), i)->fileVersion);
-        }
-        else{
-            targetFileName += to_string(sLLNodeAt(searchComm(branchName, version), i)->fileVersion);
-        }
-        targetFileName += fileType;
-        targetFile.open(targetFileName);
-        currentFile.open(sLLNodeAt(searchComm(branchName, version), i)->fileName);
-        string targetFileLine = "";
-        while (getline(targetFile, targetFileLine)){
-            currentFile << targetFileLine;
-        }
-    }
+inline bool fileExists (const string& name) {
+    if (FILE *file = fopen(name.c_str(), "r")) {
+        fclose(file);
+        return true;
+    } else {
+        return false;
+    }   
 }
+
+void commitTree::checkout(string branchName, int version){
+    string filecopy;
+    stringstream fcopy;
+    commitNode * temp = (searchComm(branchName, version));
+    singlyNode * skree = temp->head;
+    while(skree != nullptr)
+    {
+
+            string skreeName = makeFilePath(temp, skree->version);
+
+            fcopy << "cp " << skreeName << " " ;
+            fcopy << skree->fileName;
+            fcopy >> filecopy;
+            system(filecopy);
+        skree = skree->next
+    }
+
+    
+
+}
+
+//     int currNodeSLLSize = 0;
+//     singlyNode* traversalNode = searchComm(branchName, version)->head;
+//     while(traversalNode != NULL){
+//         traversalNode = traversalNode->next;
+//         currNodeSLLSize += 1;
+//     }
+//     for (int i = 0; i < currNodeSLLSize; i++){
+//         fstream targetFile = fstream();
+//         ofstream currentFile = ofstream();
+//         string targetFileName = ".minigit/" + branchName + "/" + branchName + "_" ;
+//         if (version < 10){
+//             targetFileName += "0" + to_string(version);
+//         }
+//         else{
+//             targetFileName += to_string(version);
+//         }
+//         string fileNameNoType = "";
+//         string fileType = "";
+//         bool nextCharFileType = false;
+//         for (int j = 0; j < sLLNodeAt(searchComm(branchName, version), i)->fileName.length(); j++){
+//                 if (sLLNodeAt(searchComm(branchName, version), i)->fileName[j] == '.'){
+//                     nextCharFileType = true;
+//                 }
+//                 if (!nextCharFileType){
+//                     fileNameNoType += sLLNodeAt(searchComm(branchName, version), i)->fileName[j];
+//                 }
+//                 else{
+//                     fileType += sLLNodeAt(searchComm(branchName, version), i)->fileName[j];
+//                 }
+//             }
+//         string fiVer = sLLNodeAt(searchComm(branchName, version), i)->fileVersion;
+//         targetFileName += fileNameNoType += "_";
+//         string realName = fiVer.substr(0, fiVer.find("_"));
+//         string fVer = fiVer.substr(fiVer.find("_")+1, fiVer.find("."));
+//         int version = stoi(fVer)+1;
+//         if (version < 10){
+//             targetFileName += "0" + to_string(sLLNodeAt(searchComm(branchName, version), i)->fileVersion);
+//         }
+//         else{
+//             targetFileName += to_string(sLLNodeAt(searchComm(branchName, version), i)->fileVersion);
+//         }
+//         targetFileName += fileType;
+//         targetFile.open(targetFileName);
+//         currentFile.open(sLLNodeAt(searchComm(branchName, version), i)->fileName);
+//         string targetFileLine = "";
+//         while (getline(targetFile, targetFileLine)){
+//             currentFile << targetFileLine;
+//         }
+//     }
+// }
 
 void commitTree::createBranch(commitNode *par, string branchN, singlyNode* babyHead)
 {
