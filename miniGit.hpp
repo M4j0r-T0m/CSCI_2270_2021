@@ -1,10 +1,16 @@
 #ifndef COMMITTREE_HPP
 #define COMMITTREE_HPP
-#include<vector>
-#include<iostream>
+#include <vector>
+#include <iostream>
+
 using namespace std;
 
-
+struct singlyNode
+{
+    string fileName;
+    int fileVersion;
+    singlyNode * next;
+};
 
 struct commitNode
 {
@@ -12,16 +18,9 @@ struct commitNode
     commitNode * parent;
     string branchName;
     int commitNum;
-    singlyNode * head;
+    singlyNode* head; 
     bool branched;
     bool current; 
-};
-
-struct singlyNode
-{
-    string fileName;
-    string fileVersion;
-    singlyNode * next;
 };
 
 struct hashNode
@@ -35,23 +34,26 @@ class commitTree
 {
     private:
         commitNode * root;
-        commitNode * currentBranch;
-        
     public:
-        commitTree();
-        ~commitTree();
-        void addFile(string fileName);
+        //commitTree();
+        commitTree(singlyNode* head);
+        //~commitTree();
+        void addFile(string fileName); 
         void removeFile(string fileName);
-        //void commitFile(string fileName);
-        void pushCommit(commitNode * curr, string branchName)
-        void createBranch(commitNode *par, string branchN, singlyNode* babyHead);
-        bool fileCompare(string targ, string curr);
+        bool compareFiles(string targ, string curr);//compares two files named targ and curr
+        void commitFiles(string commitBranchName);//makes copies of all files named in SLL into new folder inside commitBranchName folder
+        void pushCommit(commitNode * curr, string branchName);
+        void checkout(string branchName, int version);//checks out all the files in the SLL from folder branchName_version
+        void createBranch(commitNode* parent, string branchName, singlyNode* head);//creates a branch from parent named branchName with new head;
         void gitStatus();
-        void pullToVer(string branchName, string target);
-        void pullToVer(string branchName);
+        void pullToVer(string branchName, string target); //merges branches
+        void pullToMain(string branchName);
         static unsigned int stringToInt(string name);
-        commitNode* searchComm(string branchName, bool latest);
-        commitNode* searchComm(string branchName, int version);
+        commitNode* searchComm(string branchName, bool latest); //finds commitNode* of the latest version in folder branchName
+        commitNode* searchComm(string branchName, int version); //finds commitNode* of branchName_version
+        singlyNode* sLLNodeAt(commitNode* node, int index);
+
+        void print();
 
 
 };
@@ -68,7 +70,7 @@ class hashTable
         hashTable(int bsize);  // Constructor
 
         // inserts a key into hash table
-        bool insertHash(string name);
+        bool insertHash(commitNode* target);
 
         // hash function to map values to key
         unsigned int hashFunction(int key);
