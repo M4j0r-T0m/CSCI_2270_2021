@@ -39,14 +39,15 @@ class commitTree
 
     public:
         commitTree();
-        commitTree(singlyNode* head)
+        commitTree(singlyNode* head);
         ~commitTree();
-        void addFile(string fileName, commitNode* curr);
-        void removeFile(string fileName, commitNode* curr);
+        void addFile(string fileName);
+        void removeFile(string fileName);
         //void commitFile(string fileName);
         void pushCommit(singlyNode * babyHead);
         void pushCommit(singlyNode * babyHead, string branchName);
         void pushCommit(singlyNode * babyHead, string branchName, string newName);
+        void checkout(string branchName, int version); //checks out all files found given a branchName and a version
         void createBranch(commitNode *par, string branchN, singlyNode* babyHead);
         bool fileCompare(string targ, string curr);
         void gitStatus();
