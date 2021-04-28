@@ -146,9 +146,9 @@ void commitTree::addFile(string fileName, commitNode* curr)
      node->next = NULL;
  }
 
- void commitTree::removeFile(string fileName)
+ void commitTree::removeFile(string fileName, commitNode* curr)
  {
-     singlyNode* head = searchComm("Master", true)->head;
+     singlyNode* head = curr;
      singlyNode *node = head->next;
      singlyNode *prev = head;
      while(node->fileName != fileName)
