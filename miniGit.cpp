@@ -12,23 +12,24 @@ using namespace std;
 //----------
 hashTable::hashTable(int bsize)
 {
-    
+/*
     this->tableSize = bsize;
     table = new hashNode*[tableSize];
     for(int i=0;i<bsize;i++)
         table[i] = nullptr;
-
+*/
 }
 
 //function to calculate hash function
 unsigned int hashTable::hashFunction(int key)
-{
+{/*
     return (key % tableSize);
+    */
 }
 
 //function to search
 commitNode* hashTable::searchHash(int key)
-{
+{/*
     
     //Compute the index by using the hash function
     int index = hashFunction(key);
@@ -52,7 +53,7 @@ commitNode* hashTable::searchHash(int key)
             }
         }
     return nullptr;
-
+*/
 }
 
 //function to insert
@@ -60,6 +61,7 @@ commitNode* hashTable::searchHash(int key)
 
 bool hashTable::insertHash(commitNode* targ)
 {
+    /*
     
     int key = commitTree::stringToInt(targ->branchName);
     
@@ -95,17 +97,18 @@ bool hashTable::insertHash(commitNode* targ)
         }
      }
     else{
-        cout<<"duplicate entry: "<<key<<endl;
+        cout <<"duplicate entry: "<<key<<endl;
         return false;
     }   
 
 return false;
+*/
 }
 
 // function to display hash table
 void hashTable::printTable()
 {
-    
+    /*
     for (int i = 0; i < tableSize; i++) {
         cout << i <<"|| ";
         hashNode * temp = table[i];
@@ -114,7 +117,7 @@ void hashTable::printTable()
                 cout << temp->key << " || ";
                 temp = temp->next;
             }
-    }
+    }*/
     
  }
 
@@ -140,7 +143,6 @@ void commitTree::addFile(string fileName)
      }
      singlyNode *addNode = new singlyNode;
      addNode->fileName = fileName;
-     addNode->fileVersion = 0;
      //addNode->fileVersion = fileVersion;
      head->next = addNode;
      node->next = NULL;
@@ -208,12 +210,75 @@ void commitTree::addFile(string fileName)
 //     return found;
 // }
 
-void commitTree::checkout(string branchName, int version){
+singlyNode* commitTree::sLLNodeAt(commitNode* node, int index){
+    singlyNode* temp = node->head;
+    for (int i = 0; i < index; i++){
+        temp = temp->next;
+    }
+    return temp;
+}
 
+void commitTree::checkout(string branchName, int version){
+    int currNodeSLLSize = 0;
+    if (searchComm(branchName, version) == NULL){
+        cout << "This version does not exist." << endl;
+        return;
+    }
+    else{
+        cout << searchComm(branchName, version)->branchName;
+    }
+    singlyNode* traversalNode = searchComm(branchName, version)->head;
+    while(traversalNode != NULL){
+        traversalNode = traversalNode->next;
+        currNodeSLLSize += 1;
+    }
+    for (int i = 0; i < currNodeSLLSize; i++){
+        fstream targetFile = fstream();
+        ofstream currentFile = ofstream();
+        string targetFileName = ".minigit/" + branchName + "/" + branchName + "_" ;
+        if (version < 10){
+            targetFileName += "0" + to_string(version);
+        }
+        else{
+            targetFileName += to_string(version);
+        }
+        string fileType = "";
+        bool nextCharFileType = false;
+        bool nextCharUS = false;
+        string fileVersionNum = "";
+        for (int j = 0; j < sLLNodeAt(searchComm(branchName, version), i)->fileName.length(); j++){
+                if (sLLNodeAt(searchComm(branchName, version), i)->fileVersion[j] == '.'){
+                    nextCharFileType = true;
+                }
+                else if (sLLNodeAt(searchComm(branchName, version), i)->fileVersion[j] == '_'){
+                    nextCharUS = true;
+                }
+                if (nextCharFileType){
+                    fileType += sLLNodeAt(searchComm(branchName, version), i)->fileVersion[j];
+                }
+                else if (nextCharUS){
+                    fileVersionNum += sLLNodeAt(searchComm(branchName, version), i)->fileVersion[j];
+                }
+            }
+        targetFileName += sLLNodeAt(searchComm(branchName, version), i)->fileName += "_";
+        if (stoi(fileVersionNum) < 10){
+            targetFileName += "0" + (sLLNodeAt(searchComm(branchName, version), i)->fileVersion);
+        }
+        else{
+            targetFileName += (sLLNodeAt(searchComm(branchName, version), i)->fileVersion);
+        }
+        targetFileName += fileType;
+        targetFile.open(targetFileName);
+        currentFile.open(sLLNodeAt(searchComm(branchName, version), i)->fileName);
+        string targetFileLine = "";
+        while (getline(targetFile, targetFileLine)){
+            currentFile << targetFileLine;
+        }
+    }
 }
 
 void commitTree::createBranch(commitNode *par, string branchN, singlyNode* babyHead)
-{
+{/*
     
     if(searchHash(stringToInt(branchN)) != nullptr)
     {
@@ -227,16 +292,79 @@ void commitTree::createBranch(commitNode *par, string branchN, singlyNode* babyH
     nw->branched = false;
     nw->parent = par;
     nw->head = babyHead;
-    nw->commitNum=0;
 
     if(par != nullptr)
     {
-        if(parent->childBranch.size() == 0)
+        if(par->branchName.compare(branchN)!=0)
         {
-            parent->childBranch.push_back(nullptr);
+            if(par->childBranch.size() == 0)             //if childbranch has no entry
+            {   //garbage entry at index 0
+                par->childBranch.push_back(nullptr);     
+            }
+            par->childBranch.push_back(nw);
+            par->branched=true;
+            nw->commitNum=0;
         }
-        parent->childBranch.push_back(nw);
-        parent->branched=true;
+        else
+        {
+            par->childBranch.push_back(nw);
+            par->current=false;
+            nw->commitNum=par->commitNum++;
+        }
+
+        singlyNode * oldList = par->head;
+        singlyNode * newList = nw->head;
+        string oldLine;
+        string newLine;
+        while(oldList != nullptr)
+        {
+            while (newList != nullptr)
+            {
+                if(oldList->fileName.compare(newList->fileName) == 0)
+                {
+                    stringstream fcopy;
+                    string filecopy;
+                    if(fileCompare(newList->fileName, makeFilePath(par, newList->fileVersion)))
+                    {
+                        fcopy << "cp " << makeFilePath(par, oldList->fileVersion) << " " ;
+                        fcopy << ".minigit/" nw->branchName << "/" << nw->branchName << "_" << nw->commitNum << "/" << oldList->fileVersion;
+                        fcopy >> filecopy;
+                        system(filecopy);
+                    }
+                    else
+                    {
+                        fcopy << "cp " << makeFilePath(par, oldList->fileVersion) << " " ;
+                        fcopy << ".minigit/" nw->branchName << "/" << nw->branchName << "_" << nw->commitNum << "/" << fileVersioner(oldList->fileVersion);
+                        fcopy >> filecopy;
+                        system(filecopy);                        
+                    }
+                }
+                newList = newList->next;
+            }
+            oldList = oldList->next;
+        }
+        while(oldList != nullptr)
+        {
+            bool missing = true
+            stringstream fcopy;
+            string filecopy;
+            while (newList != nullptr)
+            {
+                if(oldList->fileName.compare(newList->fileName) == 0)
+                {
+                    missing=false;
+                }
+                newList = newList->next;
+            }
+            if(missing)
+            {
+                fcopy << "cp " << makeFilePath(par, oldList->fileVersion) << " " ;
+                fcopy << ".minigit/" nw->branchName << "/" << nw->branchName << "_" << nw->commitNum << "/" << oldList->fileVersion;
+                fcopy >> filecopy;
+                system(filecopy);
+            }
+            oldList = oldList->next;
+        }
 
     }
     else
@@ -247,9 +375,8 @@ void commitTree::createBranch(commitNode *par, string branchN, singlyNode* babyH
 
     }
 
-    insertHash(nw);
+    insertHash(nw);*/
     
-
 }
 
 commitTree::commitTree(singlyNode* head)
@@ -259,7 +386,7 @@ commitTree::commitTree(singlyNode* head)
 }
 
 commitNode* commitTree::searchComm(string branchName, bool latest) //overloaded function that either gives the first or last node of a commit branch
-{
+{/*
     commitNode* curr = searchHash(stringToInt(branchName)); //accesses a branch via hashtable
     if(latest = false)
     {
@@ -273,91 +400,126 @@ commitNode* commitTree::searchComm(string branchName, bool latest) //overloaded 
         }
     }
     return curr;
-    
+    */
+   return NULL;
 }
 commitNode* commitTree::searchComm(string branchName, int ver)  //overloaded function to find a specific commit number
 {
-    
+   /* 
     commitNode* curr = searchHash(stringToInt(branchName));
     while (curr->commitNum != ver)
     {
         curr = curr->childBranch.at(0);
     }
     return curr;    //returns pointer to desired node
-    
+    */
+   return NULL;
 }
 
 
-void pushCommit(commitNode * curr, string branchName)
+void commitTree::pushCommit(singlyNode * babyHead)
 {
+    /*
+    if (root == nullptr)
+    {
+        commitTree(babyHead); //creates a new commitTree if there isn't one
+    }
+    if (root->head == nullptr)
+    {
+        root->head = babyHead;
+        singlyNode * temp = babyHead;
+        
+        
+        system("\"mkdir .minigit/main/main_00\"");
+        while (temp != nullptr)
+        {
+            temp->fileVersion=fileVersioner(temp->fileName);
+            stringstream fcopy << "cp " << temp->fileName << " " << ".minigit/main/main_00/" << temp->fileVersion;
+            string filecopy;
+            fcopy >> filecopy;
+            system(filecopy);
+        }
+
+
+    }
+    else
+    {
+        createBranch(currentBranch, currentBranch->branchName, babyHead);
+
+    }*/
+}
+
+
+void commitTree::pushCommit(singlyNode * babyHead, string branchName)
+{
+    /*
+    {
+    if (root == nullptr)
+    {
+        commitTree(babyHead); //creates a new commitTree if there isn't one
+    }
+    if (root->head == nullptr)
+    {
+        root->head = babyHead;
+        singlyNode * temp = babyHead;
+        
+        
+        system("\"mkdir .minigit/main/main_00\"");
+        while (temp != nullptr)
+        {
+            temp->fileVersion=fileVersioner(temp->fileName);
+            stringstream fcopy << "cp " << temp->fileName << " " << ".minigit/main/main_00/" << temp->fileVersion;
+            string filecopy;
+            fcopy >> filecopy;
+            system(filecopy);
+        }
+
+
+    }
+    else
+    {
+        this->currentBranch=searchComm(branchName, true);
+        createBranch(currentBranch, currentBranch->branchName, babyHead);
+
+    }*/
+}
+
+void commitTree::pushCommit(singlyNode * babyHead, string branchName, string newName)
+{/*
     
+    {
     if (root == nullptr)
     {
         commitTree(curr->head); //creates a new commitTree if there isn't one
     }
+    if (root->head == nullptr)
+    {
+        root->head = babyHead;
+        singlyNode * temp = babyHead;
+        
+        
+        system("\"mkdir .minigit/main/main_00\"");
+        while (temp != nullptr)
+        {
+            temp->fileVersion=fileVersioner(temp->fileName);
+            stringstream fcopy << "cp " << temp->fileName << " " << ".minigit/main/main_00/" << temp->fileVersion;
+            string filecopy;
+            fcopy >> filecopy;
+            system(filecopy);
+        }
+
+
+    }
     else
     {
-        commitNode * par = searchComm(branchName, true);    //finds the desired insertion point
-        while(par->current == false)
-        {
-            par = par->childBranch.at(0);
-        }
-        if(curr->branchName.compare(branchName) != 0)
-        {
-            createBranch(par, curr->branchName, curr->head);    //if the insertion point has a different branch name, create a new branch
-        }
-        else
-        {
-            par->childBranch.at(0) = curr;
-            curr->current = true;
-            par->current = false;
-            curr->commitNum=par->commitNum++;
-            singlyNode * parT = par->head;  //temp pointers to the file SLL
-            singlyNode * curT = curr->head;
-            while(curT != nullptr)
-            {
-                bool ext = false        //does the file exist?
-                while(parT != nullptr) //does the file exist, and has it changed? 
-                {                       //if file exists compare the files for changes, and iterate the version number if need be
+        this->currentBranch=searchComm(branchName, true);
+        createBranch(currentBranch, newName, babyHead);
 
-                    if(curT->fileName.compare(parT->fileName) == 0 && fileCompare(parT->fileName, )) // does the
-                }
-            }
-        }
-
-    }
-    
-
+    }*/
 }
 
-
-bool commitTree::compareFiles(string targ, string curr){
-    /*
-    fstream targetFile = fstream();
-    string targetFileContents = "";
-    fstream currFile = fstream();
-    string currFileContents = "";
-    string tempStorage = "";
-    targetFile.open(targetFileName);
-    if (targetFile.is_open()){
-       while (getline(targetFile, tempStorage)){
-           targetFileContents += tempStorage;
-       }
-       targetFile.close();
-    }
-    currFile.open(currFileName);
-    if (currFile.is_open()){
-        while (getline(currFile, tempStorage)){
-            currFileContents += tempStorage;
-        }
-        currFile.close();
-    }
-    if (targetFileContents == currFileContents){
-        return true;
-    }
-    else{
-        return false;
-    }*/
+bool fileCompare(string targ, string curr)
+{
     streampos oldB, oldE;
     streampos newB, newE;
     fstream oldFile;
@@ -377,6 +539,8 @@ bool commitTree::compareFiles(string targ, string curr){
 
     if((newE-newB)-(oldE-oldB) != 0)
     {
+        oldFile.close();
+        newFile.close();
         return false;
     }
 
@@ -391,22 +555,19 @@ bool commitTree::compareFiles(string targ, string curr){
         getline(oldFile, oldLine);
         if(newLine.compare(oldLine)!=0)
         {
+            oldFile.close();
+            newFile.close();
             return false;
         }
     }
+    oldFile.close();
+    newFile.close();
     return true;
 }
 
-singlyNode* commitTree::sLLNodeAt(commitNode* node, int index){
-    singlyNode* temp = node->head;
-    for (int i = 0; i < index; i++){
-        temp = temp->next;
-    }
-    return temp;
-}
 
-void commitTree::commitFiles(string commitBranchName){
-    //go to commitBranchName
+//void commitTree::commitFiles(string commitBranchName){
+    /*//go to commitBranchName
     //check commit version
     commitNode* currCommitNode = searchComm(commitBranchName, true);
     int &currCommitNum = searchComm(commitBranchName, true)->commitNum;
@@ -422,7 +583,7 @@ void commitTree::commitFiles(string commitBranchName){
     filesystem::create_directory(".minigit/"+ commitBranchName + "/" + commitBranchName + "_" + branchVersionNum);
     //creating the files
     fstream currentFile = fstream();
-    fstream newFile = fstream();
+    ofstream newFile = ofstream();
     string fileName;
     string fileNameNoType;
     string fileType;
@@ -443,6 +604,7 @@ void commitTree::commitFiles(string commitBranchName){
         fileName = sLLNodeAt(currCommitNode, i)->fileName;
         fileNameNoType = "";
         fileType = "";
+        nextCharFileType = false;
         for (int j = 0; j < fileName.length(); j++){
             if (fileName[j] == '.'){
                 nextCharFileType = true;
@@ -473,6 +635,7 @@ void commitTree::commitFiles(string commitBranchName){
             fileName = sLLNodeAt(currCommitNode, i)->fileName;
             fileNameNoType = "";
             fileType = "";
+            nextCharFileType = false;
             for (int j = 0; j < fileName.length(); j++){
                 if (fileName[j] == '.'){
                     nextCharFileType = true;
@@ -484,17 +647,18 @@ void commitTree::commitFiles(string commitBranchName){
                     fileType += fileName[j];
                 }
             }
-            sameFile = compareFiles(sLLNodeAt(currCommitNode, i)->fileName, fileNameNoType + "_" + to_string(sLLNodeAt(currCommitNode, i)->fileVersion));
-            if (!sameFile){
-                sLLNodeAt(currCommitNode, i)->fileVersion += 1;
-            }
-            currentFile.open(fileName);
             if (sLLNodeAt(currCommitNode, i)->fileVersion < 10){
                 fileVersionNum = "0" + to_string(sLLNodeAt(currCommitNode, i)->fileVersion);
             }
             else{
                 fileVersionNum = to_string(sLLNodeAt(currCommitNode, i)->fileVersion);
             }
+            sameFile = compareFiles(sLLNodeAt(currCommitNode, i)->fileName, fileNameNoType + "_" + fileVersionNum);
+            if (!sameFile){
+                sLLNodeAt(currCommitNode, i)->fileVersion += 1;
+            }
+            currentFile.open(fileName);
+            
             newFile.open(".minigit/" + commitBranchName + "/" + commitBranchName + "_" + branchVersionNum + "/" + fileNameNoType + "_" + fileVersionNum + fileType);
             if (currentFile.is_open() && newFile.is_open()){
                 while (getline(currentFile, fileContent)){
@@ -509,7 +673,29 @@ void commitTree::commitFiles(string commitBranchName){
         }
     }
 
-    currCommitNum++;
+    currCommitNum++;*/
+//}
+/*
+void printHelper(commitNode* root){
+    for (int i = 0; i < root->childBranch.size(); i++){
+        if (root->childBranch.at(i) != NULL){
+            printHelper(root->childBranch.at(i));
+        }
+    }
+    singlyNode* sNode = root->head;
+    cout << "branch name: " << root->branchName << endl;
+    cout << "branch version: " << root->commitNum << endl;
+    int sNodeNum = 1;
+    while (sNode != NULL){
+        cout << "--" << sNodeNum << "th file name: " << sNode->fileName << endl;
+        cout << "--" << sNodeNum << "th max file version: " << sNode->fileVersion << endl;
+        sNodeNum += 1;
+        sNode = sNode->next;
+    }
 }
+
+void commitTree::print(){
+    printHelper(root);
+}*/
 
 #endif

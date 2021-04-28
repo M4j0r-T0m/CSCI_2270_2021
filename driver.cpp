@@ -1,5 +1,4 @@
 #include "miniGit.cpp"
-#include <filesystem>
 #pragma once
 
 using namespace std;
@@ -29,8 +28,6 @@ int main(){
     menuStart += "First you will need to create a new repository\nThe program has been initialized\n";
     menuStart += "============================================================================\n";
     cout << menuStart;
-    filesystem::create_directory(".minigit");
-    filesystem::create_directory(".minigit/master");
     cout << "The directory has been created." << endl;
     menuContinue += "Now you can do one of the following 5 things...\n";
     menuContinue += "1. Add a file\n";
@@ -90,16 +87,14 @@ int main(){
                 else{
                     commitBranchName = "master";
                 }
-                fileTree.commitFiles(commitBranchName);
-
-                
                 break;
             }
             //Process of checking out
             case 4:
             {
-                cout << "What file do you wish to check out?" << endl;
+                cout << "What branch do you wish to check out?" << endl;
                 cin >> searchBranchName;
+                cout << "Which version would you like to check out?" << endl;
                 cin >> searchVersion;
                 fileTree.checkout(searchBranchName, searchVersion);
                 break;
