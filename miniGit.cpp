@@ -11,13 +11,13 @@ using namespace std;
 //HASH TABLE FUNCTIONS
 //----------
 hashTable::hashTable(int bsize)
-{/*
+{
     
     this->tableSize = bsize;
     table = new hashNode*[tableSize];
     for(int i=0;i<bsize;i++)
         table[i] = nullptr;
-*/
+
 }
 
 //function to calculate hash function
@@ -28,7 +28,7 @@ unsigned int hashTable::hashFunction(int key)
 
 //function to search
 commitNode* hashTable::searchHash(int key)
-{/*
+{
     
     //Compute the index by using the hash function
     int index = hashFunction(key);
@@ -52,14 +52,14 @@ commitNode* hashTable::searchHash(int key)
             }
         }
     return nullptr;
-   */ 
+
 }
 
 //function to insert
 
 
 bool hashTable::insertHash(commitNode* targ)
-{/*
+{
     
     int key = commitTree::stringToInt(targ->branchName);
     
@@ -98,14 +98,14 @@ bool hashTable::insertHash(commitNode* targ)
         cout<<"duplicate entry: "<<key<<endl;
         return false;
     }   
-*/
+
 return false;
 }
 
 // function to display hash table
 void hashTable::printTable()
 {
-    /*
+    
     for (int i = 0; i < tableSize; i++) {
         cout << i <<"|| ";
         hashNode * temp = table[i];
@@ -115,7 +115,7 @@ void hashTable::printTable()
                 temp = temp->next;
             }
     }
-    */
+    
  }
 
 
@@ -214,7 +214,7 @@ void commitTree::checkout(string branchName, int version){
 
 void commitTree::createBranch(commitNode *par, string branchN, singlyNode* babyHead)
 {
-    /*
+    
     if(searchHash(stringToInt(branchN)) != nullptr)
     {
         cout << "Error: Pick a new branch name" << endl;
@@ -248,7 +248,7 @@ void commitTree::createBranch(commitNode *par, string branchN, singlyNode* babyH
     }
 
     insertHash(nw);
-    */
+    
 
 }
 
@@ -259,7 +259,7 @@ commitTree::commitTree(singlyNode* head)
 }
 
 commitNode* commitTree::searchComm(string branchName, bool latest) //overloaded function that either gives the first or last node of a commit branch
-{/*
+{
     commitNode* curr = searchHash(stringToInt(branchName)); //accesses a branch via hashtable
     if(latest = false)
     {
@@ -273,10 +273,10 @@ commitNode* commitTree::searchComm(string branchName, bool latest) //overloaded 
         }
     }
     return curr;
-    */
+    
 }
 commitNode* commitTree::searchComm(string branchName, int ver)  //overloaded function to find a specific commit number
-{/*
+{
     
     commitNode* curr = searchHash(stringToInt(branchName));
     while (curr->commitNum != ver)
@@ -284,12 +284,12 @@ commitNode* commitTree::searchComm(string branchName, int ver)  //overloaded fun
         curr = curr->childBranch.at(0);
     }
     return curr;    //returns pointer to desired node
-    */
+    
 }
 
 
 void pushCommit(commitNode * curr, string branchName)
-{/*
+{
     
     if (root == nullptr)
     {
@@ -326,7 +326,7 @@ void pushCommit(commitNode * curr, string branchName)
         }
 
     }
-  */  
+    
 
 }
 
