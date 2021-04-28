@@ -8,6 +8,42 @@
 
 using namespace std;
 
+tring nameVersioner(const string& fName)
+{
+    stringstream powerWord;
+    string output;
+    string realName;
+    int version;
+    if(fName.find("_")>0)
+    {
+        realName = fName.substr(0, fName.find("_"));
+        string fVer = fName.substr(fName.find("_")+1, fName.find("."));
+        version = stoi(fVer)+1;
+    }
+    else
+    {
+        realName = fName.substr(0, fName.find("."));
+        version = 00;
+    }
+    string filetype = fName.substr(fName.find(".")+1, fName.length());
+    powerWord << realName << "_" << version << "." << filetype;
+    powerWord >> output;
+    return output;
+}
+
+string makeFilePath(commitNode* curr,const string& fName)
+{
+    string output;
+    stringstream bigName;
+    bigName << ".minigit/" ;
+    bigName << curr->branchName << "/";
+    bigName << curr->branchName << "_" << curr->commitNum << "/" ;
+    bigName << fName ;
+    bigName >> output;
+    return output;
+
+}
+
 //HASH TABLE FUNCTIONS
 //----------
 hashTable::hashTable(int bsize)
@@ -321,7 +357,7 @@ void commitTree::createBranch(commitNode *par, string branchN, singlyNode* babyH
                     else
                     {
                         fcopy << "cp " << makeFilePath(par, oldList->fileVersion) << " " ;
-                        fcopy << ".minigit/" nw->branchName << "/" << nw->branchName << "_" << nw->commitNum << "/" << fileVersioner(oldList->fileVersion);
+                        fcopy << ".minigit/" nw->branchName << "/" << nw->branchName << "_" << nw->commitNum << "/" << nameVersioner(oldList->fileVersion);
                         fcopy >> filecopy;
                         system(filecopy);                        
                     }
@@ -426,7 +462,7 @@ void commitTree::pushCommit(singlyNode * babyHead)
         system("\"mkdir .minigit/main/main_00\"");
         while (temp != nullptr)
         {
-            temp->fileVersion=fileVersioner(temp->fileName);
+            temp->fileVersion=nameVersioner(temp->fileName);
             stringstream fcopy << "cp " << temp->fileName << " " << ".minigit/main/main_00/" << temp->fileVersion;
             string filecopy;
             fcopy >> filecopy;
@@ -460,7 +496,7 @@ void commitTree::pushCommit(singlyNode * babyHead, string branchName)
         system("\"mkdir .minigit/main/main_00\"");
         while (temp != nullptr)
         {
-            temp->fileVersion=fileVersioner(temp->fileName);
+            temp->fileVersion=nameVersioner(temp->fileName);
             stringstream fcopy << "cp " << temp->fileName << " " << ".minigit/main/main_00/" << temp->fileVersion;
             string filecopy;
             fcopy >> filecopy;
@@ -494,7 +530,7 @@ void commitTree::pushCommit(singlyNode * babyHead, string branchName, string new
         system("\"mkdir .minigit/main/main_00\"");
         while (temp != nullptr)
         {
-            temp->fileVersion=fileVersioner(temp->fileName);
+            temp->fileVersion=nameVersioner(temp->fileName);
             stringstream fcopy << "cp " << temp->fileName << " " << ".minigit/main/main_00/" << temp->fileVersion;
             string filecopy;
             fcopy >> filecopy;
