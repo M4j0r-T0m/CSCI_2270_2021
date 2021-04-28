@@ -367,10 +367,18 @@ void commitTree::createBranch(commitNode *par, string branchN, singlyNode* babyH
 
 }
 
+commitTree::commitTree()
+{
+    hashTable *commHash = new hashTable(100);
+    this->hashTab = commHash;
+    createBranch(nullptr, "Main", nullptr);
+}
+
 commitTree::commitTree(singlyNode* head)
 {
-    hashTable(100);
-    createBranch(nullptr, "Master", head);
+    hashTable *commHash = new hashTable(100);
+    this->hashTab = commHash;
+    createBranch(nullptr, "Main", head);
 }
 
 commitNode* commitTree::searchComm(string branchName, bool latest) //overloaded function that either gives the first or last node of a commit branch

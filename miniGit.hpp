@@ -30,11 +30,37 @@ struct hashNode
     struct commitNode * target;
 };
 
+class hashTable
+{
+    private:
+        int tableSize;  // No. of buckets (linked lists)
+
+        // Pointer to an array containing buckets
+        hashNode* *table;
+
+    public:
+        hashTable(int bsize);  // Constructor
+
+        // inserts a key into hash table
+        bool insertHash(commitNode *targ);
+
+        // hash function to map values to key
+        unsigned int hashFunction(int key);
+
+        
+
+        void printTable();
+
+        commitNode* searchHash(int key);
+
+};
+
 class commitTree
 {
     private:
         commitNode * root;
         commitNode * currentBranch;
+        hashTable * hashTab;
 
     public:
 
@@ -60,29 +86,5 @@ class commitTree
 
 };
 
-class hashTable
-{
-    private:
-        int tableSize;  // No. of buckets (linked lists)
-
-        // Pointer to an array containing buckets
-        hashNode* *table;
-
-    public:
-        hashTable(int bsize);  // Constructor
-
-        // inserts a key into hash table
-        bool insertHash(commitNode *targ);
-
-        // hash function to map values to key
-        unsigned int hashFunction(int key);
-
-        
-
-        void printTable();
-
-        commitNode* searchHash(int key);
-
-};
 
 #endif
