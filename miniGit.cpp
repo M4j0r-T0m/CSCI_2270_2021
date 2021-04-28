@@ -122,10 +122,10 @@ void hashTable::printTable()
 
 //TREE FUNCTIONS
 //----------
-void commitTree::addFile(string fileName)
+void commitTree::addFile(string fileName, commitNode* curr)
  {
      //int version = commitNode->commitNum;
-     singlyNode* head = searchComm("Master", true)->head;
+     singlyNode* head = curr;
      singlyNode *node = head;
      //string v = to_string(version);
      //string fileVersion = fileName + v;
