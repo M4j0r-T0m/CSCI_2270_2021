@@ -14,10 +14,20 @@ string nameVersioner(const string& fName)
 {
     stringstream powerWord;
     string output;
-    string realName = fName.substr(0, s.find("_"));
-    string fVer = fName.substr(s.find("_")+1, s.find("."));
-    int version = stoi(fVer)+1;
-    string filetype = fName.substr(s.find(".")+1, fName.length());
+    string realName;
+    int version;
+    if(fName.find("_")>0)
+    {
+        realName = fName.substr(0, fName.find("_"));
+        string fVer = fName.substr(fName.find("_")+1, fName.find("."));
+        version = stoi(fVer)+1;
+    }
+    else
+    {
+        realName = fName.substr(0, fName.find("."));
+        version = 00;
+    }
+    string filetype = fName.substr(fName.find(".")+1, fName.length());
     powerWord << realName << "_" << version << "." << filetype;
     powerWord >> output;
     return output;
@@ -193,9 +203,9 @@ void commitTree::createBranch(commitNode *par, string branchN, singlyNode* babyH
 
     if(par != nullptr)
     {
-        if(parent->childBranch.size() == 0)
-        {
-            parent->childBranch.push_back(nullptr);
+        if(parent->childBranch.size() == 0)             //if childbranch has no entry
+        {   //garbage entry at index 0
+            parent->childBranch.push_back(nullptr);     
         }
         parent->childBranch.push_back(nw);
         parent->branched=true;
@@ -217,6 +227,11 @@ commitTree::commitTree(singlyNode* head)
 {
     hashTable(100);
     createBranch(nullptr, "Main", head);
+}
+commitTree::commitTree()
+{
+    hashTable(100);
+    createBranch(nullptr, "Main", nullptr);
 }
 
 commitNode* commitTree::searchComm(string branchName, bool latest) //overloaded function that either gives the first or last node of a commit branch
@@ -245,15 +260,62 @@ commitNode* commitTree::searchComm(string branchName, int ver)  //overloaded fun
     return curr;    //returns pointer to desired node
 }
 
-void pushCommit(commitNode * curr, string branchName)
+copyHelper(string file, string targDir)
+{
+    ofile()
+}
+
+void commitTree::pushCommit(singlyNode * babyHead)
 {
     if (root == nullptr)
     {
-        commitTree(curr->head); //creates a new commitTree if there isn't one
+        commitTree(babyHead); //creates a new commitTree if there isn't one
+    }
+    if (root->head == nullptr)
+    {
+        root->head = babyHead;
+        singlyNode * temp = babyHead;
+        
+        
+        system("\"mkdir .minigit/main/main_00\"");
+        while (temp != nullptr)
+        {
+            temp->fileVersion=fileVersioner(temp->fileName);
+            stringstream fcopy << "cp " << temp->fileName << " " << ".minigit/main/main_00/" << temp->fileVersion;
+            string filecopy;
+            fcopy >> filecopy;
+            system(filecopy);
+        }
+
+
     }
     else
     {
-        commitNode * par = searchComm(branchName, true);    //finds the desired insertion point
+        singlyNode * oldList = currentBranch->head;
+        singlyNode * newList = babyHead;
+        string oldLine;
+        string newLine;
+        while(oldList != nullptr)
+        {
+            
+        }
+         
+
+        
+
+    }
+
+
+void commitTree::pushCommit(singlyNode * babyHead, string branchName, string newName)
+{
+    
+    if (root == nullptr)
+    {
+        commitTree(babyHead); //creates a new commitTree if there isn't one
+    }
+    else
+    {
+        commitNode* par = searchComm(branchName, true);    //finds the desired insertion point
         while(par->current == false)
         {
             par = par->childBranch.at(0);
@@ -286,6 +348,56 @@ void pushCommit(commitNode * curr, string branchName)
 
 }
 
+  streampos begin,end;
+  ifstream myfile ("example.bin", ios::binary);
+  begin = myfile.tellg();
+  myfile.seekg (0, ios::end);
+  end = myfile.tellg();
+  myfile.close();
+  cout << "size is: " << (end-begin) << " bytes.\n";
+  return 0;
+
+bool fileCompare(string targ, string curr)
+{
+    streampos oldB, oldE;
+    streampos newB, newE;
+    ifilestream oldFile;
+    oldFile.open(targ);
+    ifilestream newFile;
+    newFile.open(curr);
+
+    oldFile.seekg(0, ios::beg);
+    oldB =oldFile.tellg();
+    oldFile.seekg(0, ios::end):
+    oldE = oldFile.tellg();
+
+    newFile.seekg(0, ios::beg);
+    newB = newFile.tellg();
+    newFile.seekg(0, ios::end);
+    newE = newFile.tellg();
+
+    if((newE-newB)-(oldE-oldB) != 0)
+    {
+        return false;
+    }
+
+    newFile.seekg(0, ios::beg);
+    oldFile.seekg(0, ios::beg);
+
+    bool neu = false;
+    string newLine,oldLine;
+    while(!newFile.eof() || !oldFile.eof())
+    {
+        getline(newFile, newLine);
+        getline(oldFile, oldLine);
+        if(newLine.compare(oldLine)!=0)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
 // void addFile(string fileName)
 // {
 //     //int version = commitNode->commitNum;
@@ -297,7 +409,7 @@ void pushCommit(commitNode * curr, string branchName)
 //         if(node->fileName == fileName)
 //         {
 //             cout << "A file with that name as already been added." << endl;
-               return;
+               //return;
 //         }
 //         node = node->next;
 //     }
