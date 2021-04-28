@@ -199,16 +199,79 @@ void commitTree::createBranch(commitNode *par, string branchN, singlyNode* babyH
     nw->branched = false;
     nw->parent = par;
     nw->head = babyHead;
-    nw->commitNum=0;
 
     if(par != nullptr)
     {
-        if(parent->childBranch.size() == 0)             //if childbranch has no entry
-        {   //garbage entry at index 0
-            parent->childBranch.push_back(nullptr);     
+        if(par->branchName.compare(branchN)!=0)
+        {
+            if(par->childBranch.size() == 0)             //if childbranch has no entry
+            {   //garbage entry at index 0
+                par->childBranch.push_back(nullptr);     
+            }
+            par->childBranch.push_back(nw);
+            par->branched=true;
+            nw->commitNum=0;
         }
-        parent->childBranch.push_back(nw);
-        parent->branched=true;
+        else
+        {
+            par->childBranch.push_back(nw);
+            par->current=false;
+            nw->commitNum=par->commitNum++;
+        }
+
+        singlyNode * oldList = par->head;
+        singlyNode * newList = nw->head;
+        string oldLine;
+        string newLine;
+        while(oldList != nullptr)
+        {
+            while (newList != nullptr)
+            {
+                if(oldList->fileName.compare(newList->fileName) == 0)
+                {
+                    stringstream fcopy;
+                    string filecopy;
+                    if(fileCompare(newList->fileName, makeFilePath(par, newList->fileVersion)))
+                    {
+                        fcopy << "cp " << makeFilePath(par, oldList->fileVersion) << " " ;
+                        fcopy << ".minigit/" nw->branchName << "/" << nw->branchName << "_" << nw->commitNum << "/" << oldList->fileVersion;
+                        fcopy >> filecopy;
+                        system(filecopy);
+                    }
+                    else
+                    {
+                        fcopy << "cp " << makeFilePath(par, oldList->fileVersion) << " " ;
+                        fcopy << ".minigit/" nw->branchName << "/" << nw->branchName << "_" << nw->commitNum << "/" << fileVersioner(oldList->fileVersion);
+                        fcopy >> filecopy;
+                        system(filecopy);                        
+                    }
+                }
+                newList = newList->next;
+            }
+            oldList = oldList->next;
+        }
+        while(oldList != nullptr)
+        {
+            bool missing = true
+            stringstream fcopy;
+            string filecopy;
+            while (newList != nullptr)
+            {
+                if(oldList->fileName.compare(newList->fileName) == 0)
+                {
+                    missing=false;
+                }
+                newList = newList->next;
+            }
+            if(missing)
+            {
+                fcopy << "cp " << makeFilePath(par, oldList->fileVersion) << " " ;
+                fcopy << ".minigit/" nw->branchName << "/" << nw->branchName << "_" << nw->commitNum << "/" << oldList->fileVersion;
+                fcopy >> filecopy;
+                system(filecopy);
+            }
+            oldList = oldList->next;
+        }
 
     }
     else
@@ -291,71 +354,79 @@ void commitTree::pushCommit(singlyNode * babyHead)
     }
     else
     {
-        singlyNode * oldList = currentBranch->head;
-        singlyNode * newList = babyHead;
-        string oldLine;
-        string newLine;
-        while(oldList != nullptr)
-        {
-            
-        }
-         
-
-        
+        createBranch(currentBranch, currentBranch->branchName, babyHead);
 
     }
+}
 
 
-void commitTree::pushCommit(singlyNode * babyHead, string branchName, string newName)
+void commitTree::pushCommit(singlyNode * babyHead, string branchName)
 {
     
+    {
     if (root == nullptr)
     {
         commitTree(babyHead); //creates a new commitTree if there isn't one
     }
-    else
+    if (root->head == nullptr)
     {
-        commitNode* par = searchComm(branchName, true);    //finds the desired insertion point
-        while(par->current == false)
+        root->head = babyHead;
+        singlyNode * temp = babyHead;
+        
+        
+        system("\"mkdir .minigit/main/main_00\"");
+        while (temp != nullptr)
         {
-            par = par->childBranch.at(0);
+            temp->fileVersion=fileVersioner(temp->fileName);
+            stringstream fcopy << "cp " << temp->fileName << " " << ".minigit/main/main_00/" << temp->fileVersion;
+            string filecopy;
+            fcopy >> filecopy;
+            system(filecopy);
         }
-        if(curr->branchName.compare(branchName) != 0)
-        {
-            createBranch(par, curr->branchName, curr->head);    //if the insertion point has a different branch name, create a new branch
-        }
-        else
-        {
-            par->childBranch.at(0) = curr;
-            curr->current = true;
-            par->current = false;
-            curr->commitNum=par->commitNum++;
-            singlyNode * parT = par->head;  //temp pointers to the file SLL
-            singlyNode * curT = curr->head;
-            while(curT != nullptr)
-            {
-                bool ext = false        //does the file exist?
-                while(parT != nullptr) //does the file exist, and has it changed? 
-                {                       //if file exists compare the files for changes, and iterate the version number if need be
 
-                    if(curT->fileName.compare(parT->fileName) == 0 && fileCompare(parT->fileName, )) // does the
-                }
-            }
-        }
 
     }
-    
+    else
+    {
+        this->currentBranch=searchComm(branchName, true);
+        createBranch(currentBranch, currentBranch->branchName, babyHead);
 
+    }
 }
 
-  streampos begin,end;
-  ifstream myfile ("example.bin", ios::binary);
-  begin = myfile.tellg();
-  myfile.seekg (0, ios::end);
-  end = myfile.tellg();
-  myfile.close();
-  cout << "size is: " << (end-begin) << " bytes.\n";
-  return 0;
+void commitTree::pushCommit(singlyNode * babyHead, string branchName, string newName)
+{
+    
+    {
+    if (root == nullptr)
+    {
+        commitTree(babyHead); //creates a new commitTree if there isn't one
+    }
+    if (root->head == nullptr)
+    {
+        root->head = babyHead;
+        singlyNode * temp = babyHead;
+        
+        
+        system("\"mkdir .minigit/main/main_00\"");
+        while (temp != nullptr)
+        {
+            temp->fileVersion=fileVersioner(temp->fileName);
+            stringstream fcopy << "cp " << temp->fileName << " " << ".minigit/main/main_00/" << temp->fileVersion;
+            string filecopy;
+            fcopy >> filecopy;
+            system(filecopy);
+        }
+
+
+    }
+    else
+    {
+        this->currentBranch=searchComm(branchName, true);
+        createBranch(currentBranch, newName, babyHead);
+
+    }
+}
 
 bool fileCompare(string targ, string curr)
 {
